@@ -1,0 +1,14 @@
+{% import "macros.html" as macros %}
+{% extends "base.html" %}
+{% block content %}
+
+
+{{ macros.render_post(posts) }}
+    <li class="previous">
+    <a href="{{ url_for('post_id_edit', id=posts.id) }}"> edit</a>
+    </li>
+    <li class="next">
+    <a href="{{ url_for('post_id_delete', id=posts.id) }}"> delete</a>
+    </li>
+
+{% endblock %}

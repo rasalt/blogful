@@ -1,7 +1,7 @@
 from flask import render_template
 
 from blog import app
-from .database import session
+from .database import session,connection
 from .models import Post
 import mistune
 from flask import request, redirect, url_for
@@ -40,8 +40,49 @@ def add_post_get():
 def add_post_post():
     post = Post(
         title=request.form["title"],
-        content=mistune.markdown(request.form["content"]),
+        content=request.form["content"],
+#      content=mistune.markdown(request.form["content"]),
     )
     session.add(post)
     session.commit()
     return redirect(url_for("posts"))
+
+@app.route("/post/<int:id>")
+def post_id(id=1):
+  posts = session.query(Post).get(id)
+  return render_template("post_id.html", posts=posts)
+
+@app.route("/post/<int:id>/edit", methods=["GET"])
+def post_id_edit(id=1):
+   posts = session.query(Post).get(id)
+   return render_template("edit_post.html", posts=posts)
+
+@app.route("/post/<int:id>/edit", methods=["POST"])
+def post_id_edit_post(id=1):
+  print "Here in post_id_edit_post"
+#    posts = session.query(Post).get(id)
+#    print "New post and title are {} {}".format(posts.title, posts.content)
+  print "Form title {}".format(request.form["title"])
+  print "Form content {}".format(request.form["content"])
+    
+#  posts.title = request.form["title"]
+#  posts.content = request.form["content"]
+#  print "New post and title are {} {}".format(posts.title, posts.content)
+#      content=mistune.markdown(request.form["content"]),
+#    )
+  cursor = connection.cursor()
+  
+  command = "update posts set title=%s, content=%s where id=%d"
+  cursor.execute(command, (request.form["title"], request.form["content"], 27))
+  
+ # session.commit()
+  return redirect(url_for("posts"))
+
+
+@app.route("/post/<int:id>/delete", methods=["POST"])
+def post_id_delete(id=1):
+  return True
+#  posts = session.query(Post).get(id)
+#  return render_template("post_id.html", posts=posts)
+
+
