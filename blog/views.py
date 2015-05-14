@@ -1,5 +1,5 @@
 from flask import render_template
-
+import datetime
 from blog import app
 from .database import session
 from .models import Post
@@ -80,6 +80,8 @@ def post_id_edit_post(id=1):
   post = session.query(Post).get(id)
   post.title = request.form["title"]
   post.content = request.form["content"]
+  post.datetime = datetime.datetime.now()
+#  session.update(post)
   session.commit()
   return redirect(url_for("posts"))
 
