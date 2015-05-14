@@ -1,7 +1,7 @@
 from flask import render_template
 
 from blog import app
-from .database import session,connection
+from .database import session
 from .models import Post
 import mistune
 from flask import request, redirect, url_for
@@ -60,8 +60,7 @@ def post_id_edit(id=1):
 @app.route("/post/<int:id>/edit", methods=["POST"])
 def post_id_edit_post(id=1):
   print "Here in post_id_edit_post"
-#    posts = session.query(Post).get(id)
-#    print "New post and title are {} {}".format(posts.title, posts.content)
+
   print "Form title {}".format(request.form["title"])
   print "Form content {}".format(request.form["content"])
     
@@ -70,18 +69,46 @@ def post_id_edit_post(id=1):
 #  print "New post and title are {} {}".format(posts.title, posts.content)
 #      content=mistune.markdown(request.form["content"]),
 #    )
-  cursor = connection.cursor()
-  
-  command = "update posts set title=%s, content=%s where id=%d"
-  cursor.execute(command, (request.form["title"], request.form["content"], 27))
-  
- # session.commit()
+#  cursor = connection.cursor()
+#  session.
+#  command = "update posts set title=%s, content=%s where id=%s"
+#  command = "update posts set title='hello there', content='violet' where id=27;"
+#  cursor.execute(command, (request.form["title"], request.form["content"], 27))
+#  if cursor:
+#     cursor.execute(command) 
+#     print "cursor is valid"
+  post = session.query(Post).get(id)
+  post.title = request.form["title"]
+  post.content = request.form["content"]
+  session.commit()
   return redirect(url_for("posts"))
 
 
+@app.route("/post/<int:id>/delete", methods=["GET"])
+def post_id_delete(id=id):
+  post = session.query(Post).get(id)  
+  return render_template("delete_post.html", posts=post)
+
 @app.route("/post/<int:id>/delete", methods=["POST"])
-def post_id_delete(id=1):
-  return True
+def post_id_delete_post(id=id):
+  post = session.query(Post).get(id)
+  
+  if request.form["button"]=="Yes":
+    print "Yes Button"
+    session.delete(post)
+    session.commit()
+  elif request.form["button"]=="Cancel":
+    print "No Button"
+  return redirect(url_for("posts"))
+
+
+#  posts = session.query(Post).get(id)
+#  return render_template("post_id.html", posts=posts)
+
+
+
+
+
 #  posts = session.query(Post).get(id)
 #  return render_template("post_id.html", posts=posts)
 
