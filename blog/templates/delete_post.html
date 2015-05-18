@@ -1,0 +1,18 @@
+{% import "macros.html" as macros %}
+{% extends "base.html" %}
+{% block content %}
+
+
+<h1>
+    Are you sure you want to delete entry "{{ posts.title }}"
+</h1>
+
+<form role="form" method="POST">
+    <div class="form-group">
+        <label for="content">Content</label>
+    </div>
+    <input type="submit" name="button" value="Yes">
+    <input type="submit" name="button" value="Cancel">
+ 
+</form>
+{% endblock %}
