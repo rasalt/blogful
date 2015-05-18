@@ -67,16 +67,20 @@ def post_id(id=1):
 @app.route("/post/<int:id>/edit", methods=["GET"])
 @login_required
 def post_id_edit(id=1):
-   posts = session.query(Post).get(id)
+  posts = session.query(Post).get(id)
+  if (current_user.email == posts.author.email):
    return render_template("edit_post.html", posts=posts)
+  else:
+    flash("Cannot edit a post you have not authored")
+    return redirect(url_for("posts"))    
+
+  
 
 @app.route("/post/<int:id>/edit", methods=["POST"])
 @login_required
 def post_id_edit_post(id=1):
   print "Here in post_id_edit_post"
 
-  print "Form title {}".format(request.form["title"])
-  print "Form content {}".format(request.form["content"])
     
 #  posts.title = request.form["title"]
 #  posts.content = request.form["content"]
@@ -92,20 +96,27 @@ def post_id_edit_post(id=1):
 #     cursor.execute(command) 
 #     print "cursor is valid"
   post = session.query(Post).get(id)
+  
+  print "Form title {}".format(request.form["title"])
+  print "Form content {}".format(request.form["content"])
   post.title = request.form["title"]
   post.content = request.form["content"]
   post.datetime = datetime.datetime.now()
-#  session.update(post)
   session.commit()
-  return redirect(url_for("posts"))
+  return redirect(url_for("posts"))    
+
 
 
 @app.route("/post/<int:id>/delete", methods=["GET"])
 @login_required
 def post_id_delete(id=id):
-  post = session.query(Post).get(id)  
-  return render_template("delete_post.html", posts=post)
-
+  post = session.query(Post).get(id)
+  if (current_user.email == post.author.email):
+   return render_template("delete_post.html", posts=post)
+  else:
+    flash("Cannot delete a post you have not authored")
+    return redirect(url_for("posts"))    
+  
 @app.route("/post/<int:id>/delete", methods=["POST"])
 @login_required
 def post_id_delete_post(id=id):
